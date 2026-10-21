@@ -143,6 +143,11 @@ module StrongMigrations
         raise_error :add_index_columns, header: "Best practice"
       end
 
+      if postgresql? && adapter.partitioned_table?(table)
+        raise_error :add_index_partitioned unless safe?
+        return
+      end
+
       # safe_by_default goes through this path as well
       if postgresql? && options[:algorithm] == :concurrently && adapter.index_corruption?
         raise_error :add_index_corruption
@@ -443,6 +448,11 @@ module StrongMigrations
     def check_remove_index(*args)
       options = args.extract_options!
       table, _ = args
+
+      if postgresql? && adapter.partitioned_table?(table)
+        raise_error :remove_index_partitioned unless safe?
+        return
+      end
 
       if postgresql? && options[:algorithm] != :concurrently && !new_table?(table)
         # avoid suggesting extra (invalid) args

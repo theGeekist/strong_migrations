@@ -46,6 +46,11 @@ module StrongMigrations
         connection.execute "ANALYZE #{connection.quote_table_name(table.to_s)}"
       end
 
+      def partitioned_table?(table)
+        query = "SELECT 1 FROM pg_partitioned_table WHERE partrelid = to_regclass(#{connection.quote(table.to_s)}) LIMIT 1"
+        select_all(query).any?
+      end
+
       def add_column_default_safe?
         true
       end

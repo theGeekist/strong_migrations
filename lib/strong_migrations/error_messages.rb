@@ -175,6 +175,12 @@ class %{migration_name} < ActiveRecord::Migration%{migration_suffix}
   end
 end",
 
+    add_index_partitioned:
+"Postgres cannot create an index concurrently on a partitioned parent table. Strong Migrations cannot make this operation safe automatically. Build indexes on partitions and attach them after review, or use safety_assured { ... } if you accept the parent-table lock.",
+
+    remove_index_partitioned:
+"Postgres cannot drop an index concurrently on a partitioned parent table. Strong Migrations cannot make this operation safe automatically. Review the partitioned-index removal, or use safety_assured { ... } if you accept the parent-table lock.",
+
     remove_index:
 "Removing an index non-concurrently blocks writes. Instead, use:
 
